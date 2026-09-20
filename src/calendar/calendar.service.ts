@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import { EconomicEvent } from './entities/economic-event.entity';
+import { CreateEventDto } from './dto/create-event.dto';
 
 @Injectable()
 export class CalendarService implements OnModuleInit {
@@ -19,6 +20,16 @@ export class CalendarService implements OnModuleInit {
     await this.fetchAndSyncExternalEvents();
   }
 
+  //สร้างข้อมูลใหม่จากการ POST ผ่าน Thunder 
+  async create(createEventDto: CreateEventDto): Promise<EconomicEvent> {
+    const newEvent = this.eventRepository.create({
+      id: crypto.randomUUID(), // สุ่มสร้าง ID รูปแบบ UUID ให้ตรงกับฐานข้อมูล
+      ...createEventDto,
+    });
+    return await this.eventRepository.save(newEvent);
+  }
+
+  //ดึงข่าวอัตโนมัติจาก Finnhub
   async fetchAndSyncExternalEvents(): Promise<void> {
     try {
       const apiKey = 'dafgt5hr01quvmmfhc4gdafgt5hr01quvmmfhc50';
@@ -32,8 +43,8 @@ export class CalendarService implements OnModuleInit {
       if (newsData && Array.isArray(newsData) && newsData.length > 0) {
         for (const item of newsData.slice(0, 15)) {
           const headline = item.headline || '';
-          
-          // วิเคราะห์ Sentiment เบื้องต้นจากเนื้อหาข่าว
+
+          // วิเคราะห์ Sentiment ข่าว
           let sentiment = 'NEUTRAL';
           const lowerHeadline = headline.toLowerCase();
           if (
@@ -55,6 +66,7 @@ export class CalendarService implements OnModuleInit {
           }
 
           const newEvent = this.eventRepository.create({
+            id: crypto.randomUUID(),
             event_name: headline || 'Market News',
             country: 'US',
             impact: 'MEDIUM',
@@ -74,6 +86,7 @@ export class CalendarService implements OnModuleInit {
     }
   }
 
+  // ดึงข้อมูลทั้งหมดสำหรับ GET 
   async findAll(): Promise<EconomicEvent[]> {
     return this.eventRepository.find({ order: { date_time: 'DESC' } });
   }

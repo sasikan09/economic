@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity('economic_event')
 export class EconomicEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,6 +26,6 @@ export class EconomicEvent {
   @Column()
   date_time: string;
 
-  @Column({ nullable: true })
+  @Column()
   sentiment: string;
 }

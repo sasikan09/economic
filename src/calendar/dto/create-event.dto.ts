@@ -5,12 +5,14 @@ export class CreateEventDto {
   @IsString()
   event_name: string;
 
-  @IsNotEmpty({ message: 'กรุณาระบุสกุลเงิน' })
+  @IsNotEmpty({ message: 'กรุณาระบุสกุลเงิน/ประเทศ' })
   @IsString()
   country: string;
 
   @IsNotEmpty({ message: 'กรุณาระบุระดับความสำคัญ' })
-  @IsIn(['High', 'Medium', 'Low'], { message: 'Impact ต้องเป็น High, Medium หรือ Low เท่านั้น' })
+  @IsIn(['HIGH', 'MEDIUM', 'LOW', 'High', 'Medium', 'Low'], { 
+    message: 'Impact ต้องเป็น HIGH, MEDIUM หรือ LOW เท่านั้น' 
+  })
   impact: string;
 
   @IsNotEmpty({ message: 'กรุณาระบุค่าตัวเลขจริง' })
@@ -21,7 +23,15 @@ export class CreateEventDto {
   @IsString()
   forecast: string;
 
+  @IsNotEmpty({ message: 'กรุณาระบุค่าครั้งก่อน' })
+  @IsString()
+  previous: string;
+
   @IsNotEmpty({ message: 'กรุณาระบุวันเวลา' })
   @IsString()
   date_time: string;
+
+  @IsNotEmpty({ message: 'กรุณาระบุ Sentiment' })
+  @IsString()
+  sentiment: string;
 }
